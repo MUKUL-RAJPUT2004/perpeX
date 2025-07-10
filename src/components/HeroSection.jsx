@@ -88,6 +88,46 @@ const HeroSection = ({ onChatOpen }) => {
     { text: 'Get Pricing', icon: Sparkles }
   ];
 
+
+  const [text, setText] = useState('');
+  const services = ['Sales', 'Marketing', 'Talent Acquisition', 'Business Education'];
+  const [serviceIndex, setServiceIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isTypings, setIsTypings] = useState(true);
+
+  useEffect(() => {
+    
+    if (isTypings) {
+      if (charIndex < services[serviceIndex].length) {
+        const timer = setTimeout(() => {
+          setText(services[serviceIndex].slice(0, charIndex + 1));
+          setCharIndex((prev) => prev + 1);
+        }, 200);
+        return () => clearTimeout(timer);
+      } else {
+        const waitTimer = setTimeout(() => {
+          setIsTypings(false);
+        }, 1000);
+        return () => clearTimeout(waitTimer);
+      }
+    } else {
+      if (charIndex > 0) {
+        const timer = setTimeout(() => {
+          setText(services[serviceIndex].slice(0, charIndex - 1));
+          setCharIndex((prev) => prev - 1);
+        }, 100);
+        return () => clearTimeout(timer);
+      } else {
+        const resetTimer = setTimeout(() => {
+          setIsTypings(true);
+          setServiceIndex((prev) => (prev + 1) % services.length);
+          setCharIndex(0);
+        }, 500);
+        return () => clearTimeout(resetTimer);
+      }
+    }
+  }, [charIndex, isTypings, serviceIndex, services]);
+
   return (
     <section id="home" className="pt-24 pb-20 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
@@ -95,7 +135,11 @@ const HeroSection = ({ onChatOpen }) => {
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Redesigning the Future of{' '}
-            <span className="text-green-500">Sales, Marketing, and Talent.</span>
+            <span className="text-green-500 ">
+              <div style={{ padding: '20px', fontSize: '24px' }}>
+                 <h1 className='text-5xl md:text-6xl font-bold mb-6 '>{text}</h1>
+              </div>
+            </span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
             Powering business excellence through data-driven services, innovative strategies, and transformative solutions.
@@ -103,7 +147,7 @@ const HeroSection = ({ onChatOpen }) => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={onChatOpen}
-              className="btn-primary inline-flex items-center"
+              className="btn-primary inline-flex items-center "
             >
               <MessageCircle className="w-5 h-5 mr-3" />
               Start Chat with PerpexAI
